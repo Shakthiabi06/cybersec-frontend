@@ -8,6 +8,7 @@ function QuestionForm() {
   const [description, setDescription] = useState([""]);
   const [answers, setAnswers] = useState([""]);
   const [links, setLinks] = useState([""]);
+  const [images, setImages] = useState([]);
   const [basePoint, setBasePoint] = useState(100);
 
   const handleDescriptionChange = (index, value) => {
@@ -59,14 +60,25 @@ return;
 }*/
 
   const handleSubmit = async () => {
-    const data = {
-      round,
-      title,
-      description,
-      answers,
-      base_point: basePoint,
-      links,
-    };
+    if (!title || description.some(d => !d) || answers.some(a => !a)) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("round", round);
+    formData.append("title", title);
+    formData.append("base_point", basePoint);
+
+    formData.append("description", JSON.stringify(description));
+    formData.append("answers", JSON.stringify(answers));
+    formData.append("links", JSON.stringify(links));
+
+    // images
+    for (let i = 0; i < images.length; i++) {
+      formData.append("images", images[i]);
+    }
 
     console.log("Submitting:", data);
 
@@ -167,6 +179,15 @@ return;
           </button>
         </div>
       )}
+
+      <div>
+        <label>Upload Images</label>
+        <input
+          type="file"
+          multiple
+          onChange={(e) => setImages(e.target.files)}
+        />
+      </div>
 
       <input
         type="number"
