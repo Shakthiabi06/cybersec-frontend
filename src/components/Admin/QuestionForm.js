@@ -59,37 +59,50 @@ alert("Please fill all fields");
 return;
 }*/
 
+<div>
+    <label>Upload Images</label>
+    <input
+        type="file"
+        multiple
+        onChange={(e) => setImages(e.target.files)}
+    />
+</div>
+
   const handleSubmit = async () => {
-    if (!title || description.some(d => !d) || answers.some(a => !a)) {
-      alert("Please fill all fields");
-      return;
-    }
+  if (!title || description.some(d => !d) || answers.some(a => !a)) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    const formData = new FormData();
+  const formData = new FormData();
 
-    formData.append("round", round);
-    formData.append("title", title);
-    formData.append("base_point", basePoint);
+  formData.append("round", round);
+  formData.append("title", title);
+  formData.append("base_point", basePoint);
 
-    formData.append("description", JSON.stringify(description));
-    formData.append("answers", JSON.stringify(answers));
-    formData.append("links", JSON.stringify(links));
+  formData.append("description", JSON.stringify(description));
+  formData.append("answers", JSON.stringify(answers));
+  formData.append("links", JSON.stringify(links));
 
-    // images
-    for (let i = 0; i < images.length; i++) {
-      formData.append("images", images[i]);
-    }
+  for (let i = 0; i < images.length; i++) {
+    formData.append("images", images[i]);
+  }
 
-    console.log("Submitting:", data);
+  console.log("Submitting FormData");
 
-    try {
-      await API.post("/api/admin/questions", data);
-      alert("Question uploaded successfully");
-    } catch (err) {
-      console.log("Backend not connected yet");
-      alert("Check console (backend not ready)");
-    }
-  };
+  try {
+    await API.post("/api/admin/questions", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    alert("Question uploaded successfully");
+  } catch (err) {
+    console.log("Backend not connected yet");
+    alert("Check console (backend not ready)");
+  }
+};
 
   return (
     <div className="form-card">
@@ -179,15 +192,6 @@ return;
           </button>
         </div>
       )}
-
-      <div>
-        <label>Upload Images</label>
-        <input
-          type="file"
-          multiple
-          onChange={(e) => setImages(e.target.files)}
-        />
-      </div>
 
       <input
         type="number"
