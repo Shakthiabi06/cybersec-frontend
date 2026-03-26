@@ -3,3 +3,7 @@
   padding: 8px 12px;
   cursor: pointer;
 }
+
+.form-card h4 {
+  margin-top: 15px;
+}

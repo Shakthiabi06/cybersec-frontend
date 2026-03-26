@@ -7,6 +7,7 @@ function QuestionForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState([""]);
   const [answers, setAnswers] = useState([""]);
+  const [links, setLinks] = useState([""]);
   const [basePoint, setBasePoint] = useState(100);
 
   const handleDescriptionChange = (index, value) => {
@@ -21,8 +22,24 @@ function QuestionForm() {
     setAnswers(newAns);
   };
 
+  const handleLinkChange = (index, value) => {
+  const newLinks = [...links];
+  newLinks[index] = value;
+  setLinks(newLinks);
+  };
+
+  const addLink = () => {
+    setLinks([...links, ""]);
+  };
+
+  const removeLink = (index) => {
+  const newLinks = links.filter((_, i) => i !== index);
+        setLinks(newLinks);
+  };
+
   // add new field (only for round 3 & 4)
   const addField = () => {
+    if (round < 3) return;
     setDescription([...description, ""]);
     setAnswers([...answers, ""]);
   };
@@ -35,6 +52,12 @@ function QuestionForm() {
     setAnswers(newAns);
   };
 
+//check
+/*if (!title || description.some(d => !d) || answers.some(a => !a)) {
+alert("Please fill all fields");
+return;
+}*/
+
   const handleSubmit = async () => {
     const data = {
       round,
@@ -42,6 +65,7 @@ function QuestionForm() {
       description,
       answers,
       base_point: basePoint,
+      links,
     };
 
     console.log("Submitting:", data);
@@ -68,6 +92,7 @@ function QuestionForm() {
           // reset fields when switching rounds
           setDescription([""]);
           setAnswers([""]);
+          setLinks([""]);
         }}
       >
         <option value={1}>Round 1</option>
@@ -102,16 +127,45 @@ function QuestionForm() {
 
           {/* Remove button (only for round 3 & 4) */}
           {round >= 3 && description.length > 1 && (
-            <button onClick={() => removeField(index)}>
-              Remove
-            </button>
+            <button type="button" onClick={() => removeField(index)}>Remove</button>
           )}
         </div>
       ))}
 
       {/* Add button (only for round 3 & 4) */}
       {round >= 3 && (
-        <button onClick={addField}>Add Question</button>
+        <button type="button" onClick={addField}>Add Question</button>
+      )}
+
+      {round >= 3 && (
+        <div>
+          <h4>Links / Hints</h4>
+
+          {links.map((link, index) => (
+            <div key={index}>
+              <input
+                placeholder={`Link ${index + 1}`}
+                value={link}
+                onChange={(e) =>
+                  handleLinkChange(index, e.target.value)
+                }
+              />
+
+              {links.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeLink(index)}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          ))}
+
+          <button type="button" onClick={addLink}>
+            Add Link
+          </button>
+        </div>
       )}
 
       <input
@@ -121,7 +175,7 @@ function QuestionForm() {
         onChange={(e) => setBasePoint(Number(e.target.value))}
       />
 
-      <button onClick={handleSubmit}>Submit</button>
+      <button type="button" onClick={handleSubmit}>Submit</button>
     </div>
   );
 }
